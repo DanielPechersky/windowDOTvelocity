@@ -200,7 +200,7 @@ int main() {
             else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
-                else if (event.key.code == sf::Keyboard::LShift) {
+                else if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) {
                     window.setFrozen(true);
                     ball.setFrozen(true);
                 }
