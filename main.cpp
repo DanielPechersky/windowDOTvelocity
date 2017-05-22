@@ -176,8 +176,6 @@ private:
 };
 
 int main() {
-    const int WINDOW_BAR_HEIGHT = 44;
-
     PhysicsWindow window(sf::VideoMode(800, 600), "", sf::Style::Titlebar);
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
