@@ -176,8 +176,6 @@ private:
 };
 
 int main() {
-    const int WINDOW_BAR_HEIGHT = 44;
-
     PhysicsWindow window(sf::VideoMode(800, 600), "", sf::Style::Titlebar);
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
@@ -200,7 +198,7 @@ int main() {
             else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
-                else if (event.key.code == sf::Keyboard::LShift) {
+                else if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) {
                     window.setFrozen(true);
                     ball.setFrozen(true);
                 }
