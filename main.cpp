@@ -30,7 +30,7 @@ public:
         lastPosition = getPosition();
     }
 
-    const bool isFrozen() {
+    bool isFrozen() const {
         return frozen;
     }
 
@@ -47,18 +47,19 @@ public:
             setPosition(getPosition() + sf::Vector2i(velocity * t.asSeconds()));
             velocity.y += 800.0f * t.asSeconds();
 
-            if (getPosition().y > sf::VideoMode::getDesktopMode().height - getSize().y) {
-                setPosition(sf::Vector2i(getPosition().x, sf::VideoMode::getDesktopMode().height - getSize().y));
-                velocity.y *= -.85f;
-            } else if (getPosition().y <= 88) {
-                velocity.y = std::abs(velocity.y);
-            }
-            if (getPosition().x < 0) {
+            sf::IntRect bounds = getBounds();
+            if (getPosition().x < bounds.left) {
                 setPosition(sf::Vector2i(0, getPosition().y));
                 velocity.x *= -1;
-            } else if (getPosition().x > sf::VideoMode::getDesktopMode().width - getSize().x) {
-                setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width - getSize().x, getPosition().y));
+            } else if (getPosition().x > (bounds.width + bounds.left) - getSize().x) {
+                setPosition(sf::Vector2i((bounds.width + bounds.left) - getSize().x, getPosition().y));
                 velocity.x *= -1;
+            }
+            if (getPosition().y <= bounds.top) {
+                velocity.y = std::abs(velocity.y);
+            } else if (getPosition().y > (bounds.height + bounds.top) - getSize().y) {
+                setPosition(sf::Vector2i(getPosition().x, (bounds.height + bounds.top) - getSize().y));
+                velocity.y *= -.85f;
             }
 
         } else {
@@ -68,6 +69,16 @@ public:
         lastPosition = getPosition();
     }
 private:
+    sf::IntRect getBounds() const {
+        sf::IntRect bounds(0, 0, sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height);
+#ifdef __APPLE__
+        bounds.top = 88;
+        bounds.height -= 88;
+#elif _WIN32
+#endif
+        return bounds;
+    }
+
     bool frozen = true;
 
     sf::Vector2i lastPosition;
@@ -105,15 +116,6 @@ public:
 
             // the quantity by which the window displaced the ball
             sf::Vector2f displacement_by_window;
-            if (getPosition().y > window->getSize().y - getRadius()) {
-                displacement_by_window.y += (window->getSize().y - getRadius()) - getPosition().y;
-                setPosition(getPosition().x, window->getSize().y - getRadius());
-                velocity.y *= -.85f;
-            } else if (getPosition().y < getRadius()) {
-                displacement_by_window.y += getRadius() - getPosition().y;
-                setPosition(getPosition().x, getRadius());
-                velocity.y = std::abs(velocity.y) * .8f;
-            }
             if (getPosition().x < getRadius()) {
                 displacement_by_window.x += getRadius() - getPosition().x;
                 setPosition(getRadius(), getPosition().y);
@@ -122,6 +124,15 @@ public:
                 displacement_by_window.x += (window->getSize().x - getRadius()) - getPosition().x;
                 setPosition(window->getSize().x - getRadius(), getPosition().y);
                 velocity.x = -std::abs(velocity.x)*.9f;
+            }
+            if (getPosition().y < getRadius()) {
+                displacement_by_window.y += getRadius() - getPosition().y;
+                setPosition(getPosition().x, getRadius());
+                velocity.y = std::abs(velocity.y) * .8f;
+            } else if (getPosition().y > window->getSize().y - getRadius()) {
+                displacement_by_window.y += (window->getSize().y - getRadius()) - getPosition().y;
+                setPosition(getPosition().x, window->getSize().y - getRadius());
+                velocity.y *= -.85f;
             }
 
             velocity += displacement_by_window*2.0f;
