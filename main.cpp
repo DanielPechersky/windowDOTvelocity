@@ -5,15 +5,15 @@
 
 class Movable {
 public:
-    virtual const sf::Vector2f getVelocity() const {
+    virtual sf::Vector2f getVelocity() const {
         return velocity;
     }
 
-    virtual void setVelocity(sf::Vector2f velocity) {
+    virtual void setVelocity(const sf::Vector2f& velocity) {
         this->velocity = velocity;
     }
 
-    virtual void addVelocity(sf::Vector2f velocity) {
+    virtual void addVelocity(const sf::Vector2f& velocity) {
         this->velocity += velocity;
     }
 
