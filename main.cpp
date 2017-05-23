@@ -5,7 +5,7 @@
 
 class Movable {
 public:
-    virtual sf::Vector2f getVelocity() const {
+    virtual const sf::Vector2f getVelocity() const {
         return velocity;
     }
 
