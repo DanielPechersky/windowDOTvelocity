@@ -203,7 +203,7 @@ int main() {
                     ball.setFrozen(true);
                 }
             } else if (event.type == sf::Event::KeyReleased) {
-                if (event.key.code == sf::Keyboard::LShift)
+                if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift)
                     if (!isDragging) {
                         window.setFrozen(false);
                         ball.setFrozen(false);
