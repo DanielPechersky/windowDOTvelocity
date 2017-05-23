@@ -9,11 +9,11 @@ public:
         return velocity;
     }
 
-    virtual void setVelocity(sf::Vector2f velocity) {
+    virtual void setVelocity(const sf::Vector2f& velocity) {
         this->velocity = velocity;
     }
 
-    virtual void addVelocity(sf::Vector2f velocity) {
+    virtual void addVelocity(const sf::Vector2f& velocity) {
         this->velocity += velocity;
     }
 
@@ -92,7 +92,7 @@ public:
         this->window = &window;
     }
 
-    const bool isFrozen() {
+    bool isFrozen() const {
         return frozen;
     }
 
@@ -203,7 +203,7 @@ int main() {
                     ball.setFrozen(true);
                 }
             } else if (event.type == sf::Event::KeyReleased) {
-                if (event.key.code == sf::Keyboard::LShift)
+                if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift)
                     if (!isDragging) {
                         window.setFrozen(false);
                         ball.setFrozen(false);
