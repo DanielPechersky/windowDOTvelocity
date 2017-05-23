@@ -92,7 +92,7 @@ public:
         this->window = &window;
     }
 
-    const bool isFrozen() {
+    bool isFrozen() const {
         return frozen;
     }
 
