@@ -50,16 +50,16 @@ public:
             sf::IntRect bounds = getBounds();
             if (getPosition().x < bounds.left) {
                 setPosition(sf::Vector2i(0, getPosition().y));
-                velocity.x = std::abs(velocity.x);
+                velocity.x = std::abs(velocity.x)*bounciness;
             } else if (getPosition().x > (bounds.width + bounds.left) - getSize().x) {
                 setPosition(sf::Vector2i((bounds.width + bounds.left) - getSize().x, getPosition().y));
-                velocity.x = -std::abs(velocity.x);
+                velocity.x = -std::abs(velocity.x)*bounciness;
             }
             if (getPosition().y <= bounds.top) {
-                velocity.y = std::abs(velocity.y);
+                velocity.y = std::abs(velocity.y)*bounciness;
             } else if (getPosition().y > (bounds.height + bounds.top) - getSize().y) {
                 setPosition(sf::Vector2i(getPosition().x, (bounds.height + bounds.top) - getSize().y));
-                velocity.y = -std::abs(velocity.y)*.85f;
+                velocity.y = -std::abs(velocity.y)*bounciness;
             }
 
         } else {
@@ -79,9 +79,10 @@ private:
         return bounds;
     }
 
-    bool frozen = true;
-
     sf::Vector2i lastPosition;
+
+    bool frozen = true;
+    float bounciness = .85;
 };
 
 class Ball: public sf::CircleShape, public Movable {
@@ -119,23 +120,23 @@ public:
             if (getPosition().x < getRadius()) {
                 displacement_by_window.x += getRadius() - getPosition().x;
                 setPosition(getRadius(), getPosition().y);
-                velocity.x = std::abs(velocity.x)*.9f;
+                velocity.x = std::abs(velocity.x)*bounciness;
             } else if (getPosition().x > window->getSize().x - getRadius()) {
                 displacement_by_window.x += (window->getSize().x - getRadius()) - getPosition().x;
                 setPosition(window->getSize().x - getRadius(), getPosition().y);
-                velocity.x = -std::abs(velocity.x)*.9f;
+                velocity.x = -std::abs(velocity.x)*bounciness;
             }
             if (getPosition().y < getRadius()) {
                 displacement_by_window.y += getRadius() - getPosition().y;
                 setPosition(getPosition().x, getRadius());
-                velocity.y = std::abs(velocity.y)*.8f;
+                velocity.y = std::abs(velocity.y)*bounciness;
             } else if (getPosition().y > window->getSize().y - getRadius()) {
                 displacement_by_window.y += (window->getSize().y - getRadius()) - getPosition().y;
                 setPosition(getPosition().x, window->getSize().y - getRadius());
-                velocity.y = -std::abs(velocity.y)*.9f;
+                velocity.y = -std::abs(velocity.y)*bounciness;
             }
 
-            velocity += displacement_by_window*2.0f;
+            velocity += displacement_by_window*3.0f;
 
             lastScreenPosition = getPositionInScreen();
         }
@@ -172,7 +173,9 @@ private:
 
     PhysicsWindow* window;
     sf::Vector2i lastScreenPosition;
+
     bool frozen = true;
+    float bounciness = .85;
 };
 
 int main() {
