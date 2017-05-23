@@ -1,4 +1,4 @@
-#include <iostream>
+#include <fstream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -24,8 +24,8 @@ protected:
 
 class PhysicsWindow: public sf::RenderWindow, public Movable {
 public:
-    PhysicsWindow(sf::VideoMode mode, const sf::String& title, sf::Uint32 style = sf::Style::Default, const sf::ContextSettings& settings = sf::ContextSettings()):
-            sf::RenderWindow(mode, title, style, settings) {
+    PhysicsWindow(float bounciness, sf::VideoMode mode, const sf::String& title, sf::Uint32 style = sf::Style::Default, const sf::ContextSettings& settings = sf::ContextSettings()):
+            sf::RenderWindow(mode, title, style, settings), bounciness(bounciness) {
         lastPosition = getPosition();
     }
 
@@ -81,13 +81,13 @@ private:
     sf::Vector2i lastPosition;
 
     bool frozen = true;
-    float bounciness = .85;
+    float bounciness;
 };
 
 class Ball: public sf::CircleShape, public Movable {
 public:
-    Ball(PhysicsWindow& window, float radius = 0, std::size_t pointCount = 30):
-            CircleShape(radius, pointCount) {
+    Ball(PhysicsWindow& window, float bounciness, float radius = 0, std::size_t pointCount = 30):
+            CircleShape(radius, pointCount), bounciness(bounciness) {
         setOrigin(radius, radius);
         this->window = &window;
     }
@@ -174,15 +174,53 @@ private:
     sf::Vector2i lastScreenPosition;
 
     bool frozen = true;
-    float bounciness = .85;
+    float bounciness;
 };
 
+struct Configuration {
+    Configuration(): window_dims(800, 600), ball_bounciness(.85f), window_bounciness(.85f) {};
+
+    sf::VideoMode window_dims;
+    float ball_bounciness;
+    float window_bounciness;
+};
+
+Configuration getConfig(std::string filepath = "") {
+    Configuration config;
+
+    if (!filepath.empty()) {
+        std::ifstream file;
+        file.open(filepath);
+        if (file.is_open())
+            while (!file.eof()) {
+                std::string line;
+                std::getline(file, line);
+                unsigned long equals_pos = line.find("=");
+                std::string key = line.substr(0, equals_pos);
+                std::string val = line.substr(equals_pos + 1, line.size());
+
+                if (key == "width")
+                    config.window_dims.width = static_cast<unsigned int>(std::stoul(val));
+                else if (key == "height")
+                    config.window_dims.height = static_cast<unsigned int>(std::stoul(val));
+                else if (key == "ball_bounciness")
+                    config.ball_bounciness = std::stof(val);
+                else if (key == "window_bounciness")
+                    config.window_bounciness = std::stof(val);
+            }
+    }
+
+    return config;
+}
+
 int main() {
-    PhysicsWindow window(sf::VideoMode(800, 600), "", sf::Style::Titlebar);
+    Configuration config = getConfig("config.cfg");
+
+    PhysicsWindow window(config.window_bounciness, config.window_dims, "", sf::Style::Titlebar);
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
 
-    Ball ball(window, 50, 200);
+    Ball ball(window, config.ball_bounciness, 50, 200);
     ball.setPosition(sf::Vector2f(window.getSize()/2u));
     ball.setFillColor(sf::Color(200, 200, 0));
     ball.setFrozen(false);
