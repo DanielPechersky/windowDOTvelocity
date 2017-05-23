@@ -45,6 +45,7 @@ public:
     virtual void update(sf::Time t) {
         if (!frozen) {
             setPosition(getPosition() + sf::Vector2i(velocity * t.asSeconds()));
+
             velocity.y += 800.0f * t.asSeconds();
 
             sf::IntRect bounds = getBounds();
@@ -61,7 +62,6 @@ public:
                 setPosition(sf::Vector2i(getPosition().x, (bounds.height + bounds.top) - getSize().y));
                 velocity.y = -std::abs(velocity.y)*bounciness;
             }
-
         } else {
             velocity *= 0.0f;
         }
@@ -111,9 +111,9 @@ public:
         if (!frozen) {
             if (lastScreenPosition != sf::Vector2i())
                 setPositionInScreen(lastScreenPosition);
-            velocity.y += 800.0f * t.asSeconds();
-
             move(velocity * t.asSeconds());
+
+            velocity.y += 800.0f * t.asSeconds();
 
             // the quantity by which the window displaced the ball
             sf::Vector2f displacement_by_window;
