@@ -132,7 +132,7 @@ public:
             } else if (getPosition().y > window->getSize().y - getRadius()) {
                 displacement_by_window.y += (window->getSize().y - getRadius()) - getPosition().y;
                 setPosition(getPosition().x, window->getSize().y - getRadius());
-                velocity.y *= -.85f;
+                velocity.y *= -.9f;
             }
 
             velocity += displacement_by_window*2.0f;
