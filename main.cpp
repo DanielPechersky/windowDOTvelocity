@@ -109,8 +109,7 @@ public:
 
     virtual void update(sf::Time t) {
         if (!frozen) {
-            if (lastScreenPosition != sf::Vector2i())
-                setPositionInScreen(lastScreenPosition);
+            setPositionInScreen(lastScreenPosition);
             move(velocity * t.asSeconds());
 
             velocity.y += 800.0f * t.asSeconds();
@@ -223,6 +222,7 @@ int main() {
 
     Ball ball(window, config.ball_bounciness, 50, 200);
     ball.setPosition(sf::Vector2f(window.getSize()/2u));
+    ball.resetLastScreenPosition();
     ball.setFillColor(sf::Color(200, 200, 0));
     ball.setFrozen(false);
 
