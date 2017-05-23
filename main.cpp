@@ -50,16 +50,16 @@ public:
             sf::IntRect bounds = getBounds();
             if (getPosition().x < bounds.left) {
                 setPosition(sf::Vector2i(0, getPosition().y));
-                velocity.x *= -1;
+                velocity.x = std::abs(velocity.x);
             } else if (getPosition().x > (bounds.width + bounds.left) - getSize().x) {
                 setPosition(sf::Vector2i((bounds.width + bounds.left) - getSize().x, getPosition().y));
-                velocity.x *= -1;
+                velocity.x = -std::abs(velocity.x);
             }
             if (getPosition().y <= bounds.top) {
                 velocity.y = std::abs(velocity.y);
             } else if (getPosition().y > (bounds.height + bounds.top) - getSize().y) {
                 setPosition(sf::Vector2i(getPosition().x, (bounds.height + bounds.top) - getSize().y));
-                velocity.y *= -.85f;
+                velocity.y = -std::abs(velocity.y)*.85f;
             }
 
         } else {
@@ -128,11 +128,11 @@ public:
             if (getPosition().y < getRadius()) {
                 displacement_by_window.y += getRadius() - getPosition().y;
                 setPosition(getPosition().x, getRadius());
-                velocity.y = std::abs(velocity.y) * .8f;
+                velocity.y = std::abs(velocity.y)*.8f;
             } else if (getPosition().y > window->getSize().y - getRadius()) {
                 displacement_by_window.y += (window->getSize().y - getRadius()) - getPosition().y;
                 setPosition(getPosition().x, window->getSize().y - getRadius());
-                velocity.y *= -.9f;
+                velocity.y = -std::abs(velocity.y)*.9f;
             }
 
             velocity += displacement_by_window*2.0f;
