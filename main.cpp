@@ -222,7 +222,6 @@ int main() {
 
     Ball ball(window, config.ball_bounciness, 50, 200);
     ball.setPosition(sf::Vector2f(window.getSize()/2u));
-    ball.resetLastScreenPosition();
     ball.setFillColor(sf::Color(200, 200, 0));
     ball.setFrozen(false);
 
