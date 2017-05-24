@@ -1,5 +1,6 @@
 #include <cmath>
 #include <fstream>
+#include <vector>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -17,7 +18,7 @@ public:
         this->velocity += velocity;
     }
 
-    virtual void update(sf::Time t) = 0;
+    virtual void update(const sf::Time& t) = 0;
 
 protected:
     sf::Vector2f velocity;
@@ -42,7 +43,7 @@ public:
         return lastPosition != getPosition();
     }
 
-    virtual void update(sf::Time t) {
+    virtual void update(const sf::Time& t) {
         if (!frozen) {
             setPosition(getPosition() + sf::Vector2i(velocity * t.asSeconds()));
 
@@ -92,6 +93,17 @@ public:
             CircleShape(radius, pointCount), bounciness(bounciness) {
         setOrigin(radius, radius);
         this->window = &window;
+        id = balls.size();
+        balls.push_back(std::unique_ptr<Ball>(this));
+    }
+
+    static void drawAll() {
+        for (const std::unique_ptr<Ball>& ball : balls)
+            ball->window->draw(*ball);
+    }
+
+    static const std::vector<std::unique_ptr<Ball>>& getBalls() {
+        return balls;
     }
 
     bool isFrozen() const {
@@ -104,14 +116,35 @@ public:
             lastScreenPosition = getPositionInScreen();
     }
 
+    static void setAllFrozen(bool frozen) {
+        for (std::unique_ptr<Ball>& ball : balls)
+            ball->setFrozen(frozen);
+    }
+
     void resetLastScreenPosition() {
         lastScreenPosition = getPositionInScreen();
     }
 
-    virtual void update(sf::Time t) {
+    static void resetAllLastScreenPosition() {
+        for (std::unique_ptr<Ball>& ball : balls)
+            ball->resetLastScreenPosition();
+    }
+
+    bool isColliding(const Ball& other) {
+        return std::pow(getRadius() + other.getRadius(), 2) > std::pow(getPosition().x - other.getPosition().x, 2) + std::pow(getPosition().y - other.getPosition().y, 2);
+    }
+
+    virtual void update(const sf::Time& t) {
         if (!frozen) {
             setPositionInScreen(lastScreenPosition);
             move(velocity * t.asSeconds());
+
+            for (std::unique_ptr<Ball>& ball : balls)
+                if (ball->id != id && isColliding(*ball)) {
+                    float angle = std::atan2(ball->getPosition().y-getPosition().y, ball->getPosition().x-getPosition().x);
+                    setPosition(ball->getPosition()-sf::Vector2f(std::cos(angle), std::sin(angle))*(getRadius()+ball->getRadius()));
+                    std::swap(velocity, ball->velocity);
+                }
 
             velocity.y += 800.0f * t.asSeconds();
 
@@ -142,7 +175,15 @@ public:
         }
     }
 
+    static void updateAll(const sf::Time& t) {
+        for (std::unique_ptr<Ball>& ball : balls)
+            ball->update(t);
+    }
+
 private:
+    static std::vector<std::unique_ptr<Ball>> balls;
+    unsigned long id;
+
     sf::Vector2f getPositionInScreen() const {
         return sf::Vector2f(window->getPosition()) + getPosition();
     }
@@ -157,13 +198,15 @@ private:
     bool frozen = true;
     float bounciness;
 };
+std::vector<std::unique_ptr<Ball>> Ball::balls;
 
 struct Configuration {
-    Configuration(): window_dims(800, 600), ball_bounciness(.85f), window_bounciness(.85f) {};
+    Configuration(): window_dims(800, 600), ball_bounciness(.85f), window_bounciness(.85f), ball_count(3) {};
 
     sf::VideoMode window_dims;
     float ball_bounciness;
     float window_bounciness;
+    int ball_count;
 };
 
 Configuration getConfig(std::string filepath = "") {
@@ -205,10 +248,12 @@ int main() {
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
 
-    Ball ball(window, config.ball_bounciness, 50, 200);
-    ball.setPosition(sf::Vector2f(window.getSize()/2u));
-    ball.setFillColor(sf::Color(200, 200, 0));
-    ball.setFrozen(false);
+    for (int i=0; i<config.ball_count; i++) {
+        Ball* ball = new Ball(window, config.ball_bounciness, 50, 200);
+        ball->setPosition(sf::Vector2f(static_cast<float>(window.getSize().x)/(config.ball_count*2)*(2*i+1), window.getSize().y / 2u));
+        ball->setFillColor(sf::Color(200, 200, 0));
+        ball->setFrozen(false);
+    }
 
     sf::Clock clock;
 
@@ -225,13 +270,13 @@ int main() {
                     window.close();
                 else if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift) {
                     window.setFrozen(true);
-                    ball.setFrozen(true);
+                    Ball::setAllFrozen(true);
                 }
             } else if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::LShift || event.key.code == sf::Keyboard::RShift)
                     if (!isDragging) {
                         window.setFrozen(false);
-                        ball.setFrozen(false);
+                        Ball::setAllFrozen(false);
                     }
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
@@ -243,7 +288,7 @@ int main() {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     isDragging = false;
                     window.setFrozen(false);
-                    ball.setFrozen(false);
+                    Ball::setAllFrozen(false);
                     window.setVelocity(sf::Vector2f(sf::Mouse::getPosition() - mousePressedPos)*3.0f);
                 }
             }
@@ -255,12 +300,12 @@ int main() {
             window.setVelocity(sf::Vector2f());
 
         if (window.hasMoved())
-            ball.resetLastScreenPosition();
+            Ball::resetAllLastScreenPosition();
         window.update(elapsedTime);
-        ball.update(elapsedTime);
+        Ball::updateAll(elapsedTime);
 
         window.clear(sf::Color(30, 30, 30));
-        window.draw(ball);
+        Ball::drawAll();
         window.display();
     }
 
