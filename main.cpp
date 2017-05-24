@@ -110,9 +110,7 @@ public:
 
     virtual void update(sf::Time t) {
         if (!frozen) {
-            sf::Vector2i diffFromLastPos = getPositionInScreen() - lastScreenPosition;
-            if (std::abs(diffFromLastPos.x > 2 || std::abs(diffFromLastPos.y) > 2))
-                setPositionInScreen(lastScreenPosition);
+            setPositionInScreen(lastScreenPosition);
             move(velocity * t.asSeconds());
 
             velocity.y += 800.0f * t.asSeconds();
@@ -145,32 +143,16 @@ public:
     }
 
 private:
-    sf::Vector2i mapCoordsToScreen(const sf::Vector2f& point) const {
-        return mapPixelToScreen(window->mapCoordsToPixel(point));
+    sf::Vector2f getPositionInScreen() const {
+        return sf::Vector2f(window->getPosition()) + getPosition();
     }
 
-    sf::Vector2f mapScreenToCoords(const sf::Vector2i& point) const {
-        return window->mapPixelToCoords(mapScreenToPixel(point));
-    }
-
-    sf::Vector2i mapPixelToScreen(const sf::Vector2i& point) const {
-        return point + window->getPosition();
-    }
-
-    sf::Vector2i mapScreenToPixel(const sf::Vector2i& point) const {
-        return point - window->getPosition();
-    }
-
-    sf::Vector2i getPositionInScreen() const {
-        return mapCoordsToScreen(getPosition());
-    }
-
-    void setPositionInScreen(const sf::Vector2i& position) {
-        setPosition(mapScreenToCoords(position));
+    void setPositionInScreen(const sf::Vector2f& position) {
+        setPosition(position - sf::Vector2f(window->getPosition()));
     }
 
     PhysicsWindow* window;
-    sf::Vector2i lastScreenPosition;
+    sf::Vector2f lastScreenPosition;
 
     bool frozen = true;
     float bounciness;
