@@ -177,18 +177,21 @@ Configuration getConfig(std::string filepath = "") {
                 std::string line;
                 std::getline(file, line);
                 line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-                unsigned long equals_pos = line.find("=");
-                std::string key = line.substr(0, equals_pos);
-                std::string val = line.substr(equals_pos + 1, line.size());
 
-                if (key == "width")
-                    config.window_dims.width = static_cast<unsigned int>(std::stoul(val));
-                else if (key == "height")
-                    config.window_dims.height = static_cast<unsigned int>(std::stoul(val));
-                else if (key == "ball_bounciness")
-                    config.ball_bounciness = std::stof(val);
-                else if (key == "window_bounciness")
-                    config.window_bounciness = std::stof(val);
+                if (line.find('#') == std::string::npos) {
+                    unsigned long equals_pos = line.find('=');
+                    std::string key = line.substr(0, equals_pos);
+                    std::string val = line.substr(equals_pos + 1, line.size());
+
+                    if (key == "width")
+                        config.window_dims.width = static_cast<unsigned int>(std::stoul(val));
+                    else if (key == "height")
+                        config.window_dims.height = static_cast<unsigned int>(std::stoul(val));
+                    else if (key == "ball_bounciness")
+                        config.ball_bounciness = std::stof(val);
+                    else if (key == "window_bounciness")
+                        config.window_bounciness = std::stof(val);
+                }
             }
     }
 
