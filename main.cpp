@@ -166,10 +166,6 @@ private:
         setPosition(mapScreenToCoords(position));
     }
 
-    void movePositionInScreen(const sf::Vector2i& offset) {
-        move(mapScreenToCoords(offset));
-    }
-
     PhysicsWindow* window;
     sf::Vector2i lastScreenPosition;
 
