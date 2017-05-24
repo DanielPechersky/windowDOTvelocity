@@ -176,6 +176,7 @@ Configuration getConfig(std::string filepath = "") {
             while (!file.eof()) {
                 std::string line;
                 std::getline(file, line);
+                line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
                 unsigned long equals_pos = line.find("=");
                 std::string key = line.substr(0, equals_pos);
                 std::string val = line.substr(equals_pos + 1, line.size());
