@@ -234,6 +234,8 @@ Configuration getConfig(std::string filepath = "") {
                         config.ball_bounciness = std::stof(val);
                     else if (key == "window_bounciness")
                         config.window_bounciness = std::stof(val);
+                    else if (key == "ball_count")
+                        config.ball_count = std::stoi(val);
                 }
             }
     }
