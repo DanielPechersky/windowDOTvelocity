@@ -68,6 +68,7 @@ public:
 
         lastPosition = getPosition();
     }
+
 private:
     sf::IntRect getBounds() const {
         sf::IntRect bounds(0, 0, sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height);
@@ -109,7 +110,9 @@ public:
 
     virtual void update(sf::Time t) {
         if (!frozen) {
-            setPositionInScreen(lastScreenPosition);
+            sf::Vector2i diffFromLastPos = getPositionInScreen() - lastScreenPosition;
+            if (std::abs(diffFromLastPos.x > 2 || std::abs(diffFromLastPos.y) > 2))
+                setPositionInScreen(lastScreenPosition);
             move(velocity * t.asSeconds());
 
             velocity.y += 800.0f * t.asSeconds();
