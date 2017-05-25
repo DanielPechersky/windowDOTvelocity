@@ -130,10 +130,6 @@ public:
             ball->resetLastScreenPosition();
     }
 
-    bool isColliding(const Ball& other) {
-        return std::pow(getRadius() + other.getRadius(), 2) > std::pow(getPosition().x - other.getPosition().x, 2) + std::pow(getPosition().y - other.getPosition().y, 2);
-    }
-
     virtual void update(const sf::Time& t) {
         if (!frozen) {
             setPositionInScreen(lastScreenPosition);
@@ -183,6 +179,10 @@ public:
 private:
     static std::vector<std::unique_ptr<Ball>> balls;
     unsigned long id;
+
+    bool isColliding(const Ball& other) const {
+        return std::pow(getRadius() + other.getRadius(), 2) > std::pow(getPosition().x - other.getPosition().x, 2) + std::pow(getPosition().y - other.getPosition().y, 2);
+    }
 
     sf::Vector2f getPositionInScreen() const {
         return sf::Vector2f(window->getPosition()) + getPosition();
