@@ -135,7 +135,7 @@ public:
             setPositionInScreen(lastScreenPosition);
             move(velocity * t.asSeconds());
 
-            for (std::unique_ptr<Ball>& ball : balls)
+            for (const std::unique_ptr<Ball>& ball : balls)
                 if (ball->id != id && isColliding(*ball)) {
                     float angle = std::atan2(ball->getPosition().y-getPosition().y, ball->getPosition().x-getPosition().x);
                     setPosition(ball->getPosition()-sf::Vector2f(std::cos(angle), std::sin(angle))*(getRadius()+ball->getRadius()));
@@ -181,7 +181,10 @@ private:
     unsigned long id;
 
     bool isColliding(const Ball& other) const {
-        return std::pow(getRadius() + other.getRadius(), 2) > std::pow(getPosition().x - other.getPosition().x, 2) + std::pow(getPosition().y - other.getPosition().y, 2);
+        sf::Vector2f positions(std::abs(getPosition().x - other.getPosition().x), std::abs(getPosition().y - other.getPosition().y));
+        float radii = getRadius() + other.getRadius();
+        return positions.x < radii && !positions.y < radii &&
+        std::pow(radii, 2) > std::pow(positions.x, 2) + std::pow(positions.y, 2);
     }
 
     sf::Vector2f getPositionInScreen() const {
