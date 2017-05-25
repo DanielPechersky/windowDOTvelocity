@@ -183,7 +183,7 @@ private:
     bool isColliding(const Ball& other) const {
         sf::Vector2f positions(std::abs(getPosition().x - other.getPosition().x), std::abs(getPosition().y - other.getPosition().y));
         float radii = getRadius() + other.getRadius();
-        return positions.x < radii && !positions.y < radii &&
+        return positions.x < radii && positions.y < radii &&
         std::pow(radii, 2) > std::pow(positions.x, 2) + std::pow(positions.y, 2);
     }
 
