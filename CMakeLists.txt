@@ -8,7 +8,6 @@ add_executable(windowDOTvelocity ${SOURCE_FILES})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
 
-set(SFML_ROOT C:/Users/dannyp/Documents/SFML-2.4.2)
 find_package(SFML REQUIRED system window graphics)
 if (SFML_FOUND)
     include_directories(${SFML_INCLUDE_DIR})
