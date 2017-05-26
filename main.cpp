@@ -213,7 +213,7 @@ struct Configuration {
     int ball_count;
 };
 
-Configuration getConfig(std::string filepath = "") {
+Configuration& getConfig(std::string filepath = "") {
     Configuration config;
 
     if (!filepath.empty()) {
