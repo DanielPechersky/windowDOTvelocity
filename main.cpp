@@ -204,7 +204,7 @@ private:
 std::vector<std::unique_ptr<Ball>> Ball::balls;
 
 struct Configuration {
-    Configuration(): window_dims(800, 600), ball_bounciness(.85f), window_bounciness(.85f), ball_radius(50), ball_count(3) {};
+    Configuration(): window_dims(800, 600), ball_bounciness(.85f), window_bounciness(.85f), ball_radius(50.0), ball_count(3) {};
 
     sf::VideoMode window_dims;
     float ball_bounciness;
