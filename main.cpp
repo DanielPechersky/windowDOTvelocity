@@ -204,12 +204,12 @@ private:
 std::vector<std::unique_ptr<Ball>> Ball::balls;
 
 struct Configuration {
-    Configuration(): window_dims(800, 600), ball_bounciness(.85f), window_bounciness(.85f), ball_size(50), ball_count(3) {};
+    Configuration(): window_dims(800, 600), ball_bounciness(.85f), window_bounciness(.85f), ball_radius(50), ball_count(3) {};
 
     sf::VideoMode window_dims;
     float ball_bounciness;
     float window_bounciness;
-    int ball_size;
+    float ball_radius;
     int ball_count;
 };
 
@@ -238,8 +238,8 @@ Configuration getConfig(std::string filepath = "") {
                         config.ball_bounciness = std::stof(val);
                     else if (key == "window_bounciness")
                         config.window_bounciness = std::stof(val);
-                    else if (key == "ball_size")
-                        config.ball_size = std::stoi(val);
+                    else if (key == "ball_radius")
+                        config.ball_radius = std::stof(val);
                     else if (key == "ball_count")
                         config.ball_count = std::stoi(val);
                 }
@@ -257,7 +257,7 @@ int main() {
     window.setVerticalSyncEnabled(true);
 
     for (int i=0; i<config.ball_count; i++) {
-        Ball* ball = new Ball(window, config.ball_bounciness, config.ball_size);
+        Ball* ball = new Ball(window, config.ball_bounciness, config.ball_radius);
         ball->setPosition(sf::Vector2f(static_cast<float>(window.getSize().x)/(config.ball_count*2)*(2*i+1), window.getSize().y / 2u));
         ball->setFillColor(sf::Color(200, 200, 0));
         ball->setFrozen(false);
