@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_FILES main.cpp)
 add_executable(windowDOTvelocity ${SOURCE_FILES})
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules")
 
 find_package(SFML REQUIRED system window graphics)
 if (SFML_FOUND)
